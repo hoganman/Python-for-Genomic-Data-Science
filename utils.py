@@ -11,9 +11,7 @@ START_CODONS = ("ATG",)
 STOP_CODONS = ("TAA", "TAG", "TGA")
 
 
-def convert_index_pair_to_position_pair(
-    index_pair
-):
+def convert_index_pair_to_position_pair(index_pair):
     r"""Convert a pair of Python indices to pair positions
 
     Parameters
@@ -32,9 +30,7 @@ def convert_index_pair_to_position_pair(
     return tuple(val + 1 for val in index_pair)
 
 
-def key_by_sequence_length(
-    seq_rec
-):
+def key_by_sequence_length(seq_rec):
     r"""A key function that returns the length of the sequence record
 
     Parameters
@@ -49,10 +45,7 @@ def key_by_sequence_length(
     return len(seq_rec)
 
 
-def get_sequence_records(
-    filename,
-    fmt
-):
+def get_sequence_records(filename, fmt):
     r"""Get the sequence records from a file
 
     Parameters
@@ -76,10 +69,7 @@ def get_sequence_records(
         return list(SeqIO.parse(sequence_file, fmt))
 
 
-def get_forward_rf_table(
-    seq_str,
-    num
-):
+def get_forward_rf_table(seq_str, num):
     r"""Build a forward reading frame (RF) table codon index list from a DNA sequence.
     **Gaps are ignored in this treatment.**
 
@@ -112,13 +102,13 @@ def get_forward_rf_table(
         if len(seq_str) not in rf_table:
             rf_table.append(len(seq_str))
     else:
-        raise ValueError("Only the forward reading frames are supported for this method")
+        raise ValueError(
+            "Only the forward reading frames are supported for this method"
+        )
     return rf_table
 
 
-def get_forward_rf_tables(
-    rec
-):
+def get_forward_rf_tables(rec):
     r"""Get a mapper between reader frame (RF) number and codon index list
 
     Parameters
@@ -131,16 +121,10 @@ def get_forward_rf_tables(
     Dict[int, list[int]]
         A codon reading frame map with keys (1, 2, 3)
     """
-    return {
-        num: get_forward_rf_table(str(rec.seq), num)
-        for num in range(1, 4)
-    }
+    return {num: get_forward_rf_table(str(rec.seq), num) for num in range(1, 4)}
 
 
-def get_all_forward_orf(
-    rec,
-    rf_tables
-):
+def get_all_forward_orf(rec, rf_tables):
     r"""Get all possible forward open reading frame (ORF) given a reading frame (RF) mapper
 
     Parameters
@@ -163,7 +147,7 @@ def get_all_forward_orf(
         for rf_table_index in range(len(rf_table) - 1):
             codon_index_start = rf_table[rf_table_index]
             codon_index_end = rf_table[rf_table_index + 1]
-            test_codon = rec.seq[codon_index_start: codon_index_end]
+            test_codon = rec.seq[codon_index_start:codon_index_end]
             if test_codon in START_CODONS:
                 start_codon_index_pairs.append((codon_index_start, codon_index_end))
             elif test_codon in STOP_CODONS:
@@ -172,7 +156,10 @@ def get_all_forward_orf(
         # print("stop codon index pairs = ", stop_codon_index_pairs)
         # Remove stop codons that precede start codons
         if len(start_codon_index_pairs) > 0:
-            while len(stop_codon_index_pairs) > 0 and stop_codon_index_pairs[0][0] < start_codon_index_pairs[0][0]:
+            while (
+                len(stop_codon_index_pairs) > 0
+                and stop_codon_index_pairs[0][0] < start_codon_index_pairs[0][0]
+            ):
                 stop_codon_index_pairs.pop(0)
 
         orf = []
@@ -189,10 +176,7 @@ def get_all_forward_orf(
     return orf_by_num
 
 
-def get_all_subsequences(
-    rec,
-    length
-):
+def get_all_subsequences(rec, length):
     r"""Get the unique set of subsequences of fixed length
 
     Parameters
@@ -208,17 +192,11 @@ def get_all_subsequences(
         Set of all subsequences
     """
     return set(
-        [
-            str(rec.seq)[index: index+length]
-            for index in range(len(rec)-length+1)
-        ]
+        [str(rec.seq)[index : index + length] for index in range(len(rec) - length + 1)]
     )
 
 
-def count_overlapping_occurrences(
-    seq,
-    subseq
-):
+def count_overlapping_occurrences(seq, subseq):
     r"""Find all overlapping occurrences of a subsequence. The algorithm taken from Geeks For Geeks URL
     https://www.geeksforgeeks.org/python-count-overlapping-substring-in-a-given-string/
 

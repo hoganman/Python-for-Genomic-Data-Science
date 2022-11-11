@@ -14,10 +14,7 @@ class SequenceRecordList(UserList):
     The input list is sorted by sequence length from shorted [0] to longest [-1].
     """
 
-    def __init__(
-        self,
-        data=None
-    ):
+    def __init__(self, data=None):
         r"""Initialize the sequence record list
 
         Parameters
@@ -27,19 +24,13 @@ class SequenceRecordList(UserList):
         """
         self.data: List[SeqIO.SeqRecord]
         super().__init__(data)
-        self.data.sort(
-            key=lambda record: len(record.seq)
-        )
+        self.data.sort(key=lambda record: len(record.seq))
         self.sorted_ids = {
             self.data[index].id: index for index in range(len(self.data))
         }
 
     @classmethod
-    def read_file(
-        cls,
-        filename,
-        fmt
-    ):
+    def read_file(cls, filename, fmt):
         r"""Get the sequence records from a file
 
         Parameters
@@ -52,10 +43,7 @@ class SequenceRecordList(UserList):
         sequences = utils.get_sequence_records(filename, fmt)
         return cls(sequences)
 
-    def get_records_of_length(
-        self,
-        length
-    ):
+    def get_records_of_length(self, length):
         r"""Find all the sequence records that are of the given length
 
         Parameters
@@ -69,13 +57,15 @@ class SequenceRecordList(UserList):
             The found sequences that are of target length
         """
         # For really long sequences, this saves a lot of time
-        start_index = bisect.bisect_left(self.data, length, key=utils.key_by_sequence_length)
-        end_index = bisect.bisect_right(self.data, length, key=utils.key_by_sequence_length)
-        return tuple(self.data[start_index: end_index])
+        start_index = bisect.bisect_left(
+            self.data, length, key=utils.key_by_sequence_length
+        )
+        end_index = bisect.bisect_right(
+            self.data, length, key=utils.key_by_sequence_length
+        )
+        return tuple(self.data[start_index:end_index])
 
-    def get_longest_sequences(
-        self
-    ):
+    def get_longest_sequences(self):
         r"""Get the sequences of the longest length
 
         Returns
@@ -86,9 +76,7 @@ class SequenceRecordList(UserList):
         target_length = len(self.data[-1])
         return self.get_records_of_length(target_length)
 
-    def get_shortest_sequences(
-        self
-    ):
+    def get_shortest_sequences(self):
         r"""Get the sequences of the shortest length
 
         Returns
@@ -99,10 +87,7 @@ class SequenceRecordList(UserList):
         target_length = len(self.data[0])
         return self.get_records_of_length(target_length)
 
-    def get_by_id(
-        self,
-        ident
-    ):
+    def get_by_id(self, ident):
         r"""Get the sequence record by ID
 
         Parameters
@@ -119,10 +104,7 @@ class SequenceRecordList(UserList):
             return None
         return self.data[self.sorted_ids[ident]]
 
-    def get_all_forward_repeating_overlapping_subsequences_of_length(
-        self,
-        length
-    ):
+    def get_all_forward_repeating_overlapping_subsequences_of_length(self, length):
         r"""Highly specialized method to find forward-direction, repeating, and overlapping subsequences of a fixed
         length
 
@@ -147,21 +129,22 @@ class SequenceRecordList(UserList):
         subsequence_counts = dict.fromkeys(subsequences_strings, None)
         # Search all records for repeating of the sequences
         for subseq in subsequence_counts.keys():
-            counts_dict = {
-                "ids": list(),
-                "index_pairs": list(),
-                "count": 0
-            }
+            counts_dict = {"ids": list(), "index_pairs": list(), "count": 0}
             for seq_rec2 in self.data:
                 # print("record: ", seq_rec2.seq)
                 # print("subseq: ", subseq)
-                subseq_count, subseq_index_pairs = utils.count_overlapping_occurrences(str(seq_rec2.seq), subseq)
+                subseq_count, subseq_index_pairs = utils.count_overlapping_occurrences(
+                    str(seq_rec2.seq), subseq
+                )
                 # print("pairs: ", subseq_index_pairs)
                 # print("======================")
                 if subseq_count == 0:
                     continue
                 for index_pair in subseq_index_pairs:
-                    if seq_rec2.id in counts_dict["ids"] and index_pair in counts_dict["index_pairs"]:
+                    if (
+                        seq_rec2.id in counts_dict["ids"]
+                        and index_pair in counts_dict["index_pairs"]
+                    ):
                         continue
                     counts_dict["count"] += 1
                     counts_dict["ids"].append(seq_rec2.id)
