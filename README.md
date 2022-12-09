@@ -2,6 +2,8 @@
 
 This is a demonstration of my learned skills in the Coursera course of the same name.
 
+This certification link confirms my completion of the course: [coursera.org/verify/7U8FERCM3B5G](https://www.coursera.org/verify/7U8FERCM3B5G)
+
 These skills are presented using the final exam questions as guidance.
 
 # Final Exam Instructions
